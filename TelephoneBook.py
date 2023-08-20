@@ -18,6 +18,7 @@ class PhoneBook:
         return phone_book
 
     def save_phone_book(self):
+        """ Сохранение телефонного справочника """
         with open(self.file_name, mode='w', newline='', encoding='utf-8') as file:
             fieldnames = ['Фамилия', 'Имя', 'Отчество', 'Организация', 'Рабочий телефон', 'Личный телефон']
             writer = csv.DictWriter(file, fieldnames=fieldnames)
