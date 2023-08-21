@@ -1,12 +1,28 @@
+"""
+Этот код представляет собой программу для управления телефонной книгой.
+Он позволяет пользователю выполнять различные операции с записями в телефонной книге,
+такие как добавление, редактирование, удаление и поиск записей.
+
+"""
+
 import csv
 import re
 
 class PhoneBook:
+    """
+    Класс для представления телефонной книги.
+
+    """
     def __init__(self, file_name):
         self.file_name = file_name
         self.phone_book = self.load_phone_book()
 
     def load_phone_book(self):
+        """
+        Загружает данные из файла в телефонную книгу.
+
+        :return:Список словарей, представляющих записи в телефонной книге.
+        """
         phone_book = []
         try:
             with open(self.file_name, mode='r', newline='', encoding='utf-8') as file:
@@ -18,7 +34,10 @@ class PhoneBook:
         return phone_book
 
     def save_phone_book(self):
-        """ Сохранение телефонного справочника """
+        """
+        Сохраняет текущее состояние телефонной книги в файл.
+
+        """
         with open(self.file_name, mode='w', newline='', encoding='utf-8') as file:
             fieldnames = ['Фамилия', 'Имя', 'Отчество', 'Организация', 'Рабочий телефон', 'Личный телефон']
             writer = csv.DictWriter(file, fieldnames=fieldnames)
@@ -26,10 +45,17 @@ class PhoneBook:
             writer.writerows(self.phone_book)
 
 class Menu:
+    """
+     Класс для представления меню управления телефонной книгой.
+    """
+
     def __init__(self, phone_book):
         self.phone_book = phone_book
 
     def display_menu(self):
+        """
+            Отображает меню операций на экране.
+        """
         print("\nВыберите действие:")
         print("1. Вывести записи из справочника")
         print("2. Добавить новую запись")
@@ -39,6 +65,9 @@ class Menu:
         print("6. Выйти")
 
     def delete_record(self):
+        """
+        Удаляет запись из телефонной книги на основе фамилии.
+        """
         last_name = input("Введите фамилию записи, которую хотите удалить: ").title()
         found_records = [record for record in self.phone_book.phone_book if record['Фамилия'] == last_name]
 
@@ -66,6 +95,9 @@ class Menu:
         self.phone_book.save_phone_book()
 
     def run(self):
+        """
+            Запускает цикл меню для взаимодействия с пользователем.
+        """
         while True:
             self.display_menu()
             choice = input("Введите номер выбранного действия: ")
@@ -85,16 +117,37 @@ class Menu:
                 print("Неверный выбор. Попробуйте снова.")
 
     def display_phone_book(self):
+        """
+        Отображает все записи в телефонной книге.
+        """
         for record in self.phone_book.phone_book:
             print(record)
 
-    def is_valid_name(self, name):
+    def is_valid_name(self, name: str) -> str:
+        """
+        Проверяет допустимость имени.
+        :param name: Имя для проверки.
+        :return: True, если имя допустимо, иначе False.
+        """
+
         return name.isalpha()
 
-    def is_valid_phone(self, phone):
+    def is_valid_phone(self, phone: str) -> bool:
+        """
+                Проверяет допустимость номера телефона.
+                :param Номер телефона для проверки..
+                :return: True, если номер телефона допустим, иначе False.
+                """
         return re.match(r'^\(\d{3,5}\) \d{3}-\d{2}-\d{2}$', phone)
 
-    def get_valid_input(self, prompt, validator):
+    def get_valid_input(self, prompt: str, validator: callable)->str:
+        """
+        Запрашивает допустимый ввод у пользователя
+        :param prompt: Подсказка для ввода
+        :param validator: функция-валидатор для проверки ввода
+        :return: Допустимый ввод пользователя
+        """
+
         while True:
             user_input = input(prompt)
             if validator(user_input):
@@ -103,6 +156,9 @@ class Menu:
                 print("Неверный формат. Попробуйте снова.")
 
     def add_record(self):
+        """
+            Добавляет новую запись в телефонную книгу.
+        """
         record = {}
         record['Фамилия'] = self.get_valid_input("Введите фамилию: ", self.is_valid_name)
         record['Имя'] = self.get_valid_input("Введите имя: ", self.is_valid_name)
@@ -115,6 +171,9 @@ class Menu:
         self.phone_book.save_phone_book()
 
     def edit_record(self):
+        """
+            Редактирует существующую запись в телефонной книге.
+        """
         last_name = input("Введите фамилию записи, которую хотите редактировать: ").title()
         found_records = [record for record in self.phone_book.phone_book if record['Фамилия'] == last_name]
 
@@ -150,6 +209,9 @@ class Menu:
         self.phone_book.save_phone_book()
 
     def search_records(self):
+        """
+            Выполняет поиск записей в телефонной книге по ключевым словам.
+        """
         query = input(
             "Введите запрос для строгого поиска (Фамилия, Имя, Отчество, Организация, Рабочий телефон, Личный телефон), разделяя характеристики запятыми: ").lower()
         keywords = [keyword.strip() for keyword in query.split(",")]
@@ -184,6 +246,9 @@ class Menu:
             print("Ничего не найдено.")
 
     def exit_program(self):
+        """
+            Сохраняет изменения и завершает программу.
+        """
         self.phone_book.save_phone_book()
         print("Справочник сохранен. До свидания!")
         exit()
